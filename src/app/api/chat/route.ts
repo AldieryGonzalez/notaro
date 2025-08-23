@@ -1,9 +1,13 @@
 import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
+import { createIssue } from "@/linear/action";
+
 import {
   convertToModelMessages,
   generateText,
   streamText,
   UIMessage,
+  tool
 } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -25,8 +29,20 @@ export async function POST(req: NextRequest) {
     const result = await streamText({
       model: openai("gpt-4o"),
       messages: modelMessages,
-      system: "You are a helpful AI assistant that analyzes files uploaded by users. When a user uploads a file, provide a detailed analysis of its contents, structure, and key information. Be thorough and helpful in your responses.",
+      system:
+        "You are a helpful AI assistant that analyzes files uploaded by users. When a user uploads a file, provide a detailed analysis of its contents, structure, and key information. Be thorough and helpful in your responses. After analyze the file, generate corrspondant title for each key information if you think it's incomplete, then invoke createLinearIssue tool call for each title. Also inform user what issue you create after tool call invocation",
       maxOutputTokens: 1000,
+      tools: {
+        createLinearIssue: tool({
+          description: "create issue on linear",
+          inputSchema: z.object({
+            title: z
+              .string()
+              .describe("The title for creating linear issue"),
+          }),
+          execute: async ({ title}) => (await createIssue(title)),
+        }),
+      },
     });
 
     return result.toUIMessageStreamResponse();
