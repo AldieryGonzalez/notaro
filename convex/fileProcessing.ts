@@ -7,6 +7,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { Agent, createThread } from "@convex-dev/agent";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { experimental_createMCPClient } from "ai";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { z } from "zod";
 
 // Action to process uploaded file with Gemini AI
@@ -94,6 +95,7 @@ Analyze the content now and extract all actionable items:`;
       const httpTransport = new StreamableHTTPClientTransport(
         new URL("mcp.linear.app/mcp")
       );
+
       const mcpClient = await experimental_createMCPClient({
         transport: httpTransport,
       });

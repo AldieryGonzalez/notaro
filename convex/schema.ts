@@ -40,37 +40,6 @@ const applicationTables = {
     .index("by_workflow", ["workflowId"])
     .index("by_source", ["sourceNodeId"])
     .index("by_target", ["targetNodeId"]),
-  actionItems: defineTable({
-    title: v.string(),
-    description: v.optional(v.string()),
-    confidence: v.number(),
-    assignee: v.optional(v.string()),
-    dueDate: v.optional(v.string()),
-    priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
-    labels: v.array(v.string()),
-    status: v.union(
-      v.literal("todo"),
-      v.literal("in_progress"),
-      v.literal("done")
-    ),
-    sourceFile: v.string(),
-    sourceType: v.union(v.literal("image"), v.literal("pdf")),
-    linearIssueId: v.optional(v.string()),
-    syncedAt: v.optional(v.number()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-    sourceRegions: v.optional(
-      v.array(
-        v.object({
-          page: v.number(),
-          x: v.number(),
-          y: v.number(),
-          w: v.number(),
-          h: v.number(),
-        })
-      )
-    ),
-  }),
 
   uploads: defineTable({
     filename: v.string(),
