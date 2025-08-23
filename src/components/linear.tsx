@@ -1,4 +1,4 @@
-import { getMyIssues, createIssue } from "@/linear/action";
+import { getMyIssues, createIssue } from "@/plugins/linear/action";
 import { useEffect, useState } from "react";
 
 export default function Linear() {
