@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Upload, FileText, ImageIcon, File, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Linear from "@/components/linear"
 
 interface ChatMessage {
   id: string
@@ -118,6 +119,7 @@ export default function FileChatApp() {
           <p className="text-muted-foreground">Upload files to chat with AI - no text input needed</p>
         </div>
       </header>
+      <Linear/>
 
       {/* Chat Area */}
       <div className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
