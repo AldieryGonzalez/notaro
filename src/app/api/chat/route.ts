@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
     const result = await streamText({
       model: openai("gpt-4o"),
       messages: modelMessages,
+      system: "You are a helpful AI assistant that analyzes files uploaded by users. When a user uploads a file, provide a detailed analysis of its contents, structure, and key information. Be thorough and helpful in your responses.",
       maxOutputTokens: 1000,
     });
 

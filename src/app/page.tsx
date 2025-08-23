@@ -87,10 +87,7 @@ export default function FileChatApp() {
       // Send to AI API
       sendMessage({
         role: "user",
-        parts: [
-          { type: "text", text: "Please analyze this file." },
-          ...fileParts,
-        ],
+        parts: fileParts,
       });
     } catch (error) {
       console.error("Error processing file:", error);
@@ -162,9 +159,9 @@ export default function FileChatApp() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="border-b bg-card flex-shrink-0">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-foreground">File Chat AI</h1>
           <p className="text-muted-foreground">
@@ -174,9 +171,9 @@ export default function FileChatApp() {
       </header>
 
       {/* Chat Area */}
-      <div className="flex-1 container mx-auto px-4 py-6 max-w-4xl">
-        <Card className="h-[calc(100vh-200px)] flex flex-col">
-          <CardContent className="flex-1 p-0">
+      <div className="flex-1 container mx-auto px-4 py-6 max-w-4xl overflow-hidden">
+        <Card className="h-full flex flex-col overflow-hidden">
+          <CardContent className="flex-1 p-0 overflow-hidden">
             <ScrollArea className="h-full p-6">
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
