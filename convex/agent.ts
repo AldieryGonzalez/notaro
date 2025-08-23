@@ -20,7 +20,7 @@ export const helloWorld = action({
     const tools = await clientTwo.tools();
 
     const agent = new Agent(components.agent, {
-      name: "My Agent",
+      name: "File Processing Agent",
       languageModel: openai.chat("gpt-5-mini"),
       tools: tools,
     });

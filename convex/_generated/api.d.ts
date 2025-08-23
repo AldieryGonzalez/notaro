@@ -10,9 +10,12 @@
 
 import type * as agent from "../agent.js";
 import type * as auth from "../auth.js";
+import type * as fileProcessing from "../fileProcessing.js";
+import type * as fileStorage from "../fileStorage.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as router from "../router.js";
+import type * as uploads from "../uploads.js";
 import type * as workflows from "../workflows.js";
 
 import type {
@@ -32,9 +35,12 @@ import type {
 declare const fullApi: ApiFromModules<{
   agent: typeof agent;
   auth: typeof auth;
+  fileProcessing: typeof fileProcessing;
+  fileStorage: typeof fileStorage;
   files: typeof files;
   http: typeof http;
   router: typeof router;
+  uploads: typeof uploads;
   workflows: typeof workflows;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
