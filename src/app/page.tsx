@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Loader } from "@/components/ai-elements/loader";
+import { Response } from "@/components/ai-elements/response";
 
 async function convertFilesToDataURLs(
   files: FileList
@@ -251,10 +252,26 @@ export default function FileChatApp() {
                         ) : (
                           <div className="text-sm">
                             {message.parts?.map((part, partIndex) => {
-                              if (part.type === "text") {
-                                return <p key={partIndex}>{part.text}</p>;
+                              switch (part.type) {
+                                case "text":
+                                  return (
+                                    <Response key={partIndex}>
+                                      {part.text}
+                                    </Response>
+                                  );
+                                case "dynamic-tool":
+                                  return (
+                                    <div
+                                      key={partIndex}
+                                      className="flex items-center gap-2 text-sm opacity-90"
+                                    >
+                                      {getFileIcon(part.type || "")}
+                                      <span>Ran tool: {part.toolName}</span>
+                                    </div>
+                                  );
+                                default:
+                                  return null;
                               }
-                              return null;
                             }) || <p>AI response</p>}
                           </div>
                         )}
