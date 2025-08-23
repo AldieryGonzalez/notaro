@@ -13,38 +13,43 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
   const node = useQuery(api.workflows.getNode, { nodeId });
   const updateNodeConfig = useMutation(api.workflows.updateNodeConfig);
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const getFileUrl = useQuery(api.files.getFileUrl, 
+  const getFileUrl = useQuery(
+    api.files.getFileUrl,
     node?.config?.fileId ? { fileId: node.config.fileId } : "skip"
   );
-  
+
   const [isUploading, setIsUploading] = useState(false);
-  const [processingType, setProcessingType] = useState(node?.config?.processingType || "");
-  const [outputFormat, setOutputFormat] = useState(node?.config?.outputFormat || "");
+  const [processingType, setProcessingType] = useState(
+    node?.config?.processingType || ""
+  );
+  const [outputFormat, setOutputFormat] = useState(
+    node?.config?.outputFormat || ""
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!node) return null;
 
   const handleFileUpload = async (file: File) => {
     if (!file) return;
-    
+
     setIsUploading(true);
     try {
       // Get upload URL
       const uploadUrl = await generateUploadUrl();
-      
+
       // Upload file
       const result = await fetch(uploadUrl, {
         method: "POST",
         headers: { "Content-Type": file.type },
         body: file,
       });
-      
+
       if (!result.ok) {
         throw new Error("Upload failed");
       }
-      
+
       const { storageId } = await result.json();
-      
+
       // Update node config
       await updateNodeConfig({
         nodeId,
@@ -55,7 +60,7 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
           fileType: file.type,
         },
       });
-      
+
       toast.success("File uploaded successfully!");
     } catch (error) {
       toast.error("Failed to upload file");
@@ -88,31 +93,57 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
-        <p className="text-sm text-gray-600 mt-1 capitalize">{node.type.replace('_', ' ')} Node</p>
+        <p className="text-sm text-gray-600 mt-1 capitalize">
+          {node.type.replace("_", " ")} Node
+        </p>
       </div>
 
       <div className="p-4 space-y-6">
         {node.type === "file_upload" && (
           <div>
             <h4 className="font-medium text-gray-900 mb-3">File Upload</h4>
-            
+
             {node.config?.fileId ? (
               <div className="space-y-3">
                 <div className="p-3 bg-green-50 border border-green-200 rounded-md">
                   <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg
+                      className="w-4 h-4 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
                     </svg>
-                    <span className="text-sm font-medium text-green-800">File uploaded</span>
+                    <span className="text-sm font-medium text-green-800">
+                      File uploaded
+                    </span>
                   </div>
-                  <p className="text-sm text-green-700 mt-1">{node.config.fileName}</p>
+                  <p className="text-sm text-green-700 mt-1">
+                    {node.config.fileName}
+                  </p>
                 </div>
-                
+
                 {getFileUrl && (
                   <a
                     href={getFileUrl}
@@ -120,8 +151,18 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
                     </svg>
                     View file
                   </a>
@@ -134,7 +175,9 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
                   type="file"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) handleFileUpload(file);
+                    if (file) {
+                      void handleFileUpload(file);
+                    }
                   }}
                   className="hidden"
                 />
@@ -146,14 +189,28 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
                   {isUploading ? (
                     <div className="flex items-center justify-center gap-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm text-gray-600">Uploading...</span>
+                      <span className="text-sm text-gray-600">
+                        Uploading...
+                      </span>
                     </div>
                   ) : (
                     <div>
-                      <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      <svg
+                        className="w-8 h-8 text-gray-400 mx-auto mb-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
                       </svg>
-                      <p className="text-sm text-gray-600">Click to upload a file</p>
+                      <p className="text-sm text-gray-600">
+                        Click to upload a file
+                      </p>
                     </div>
                   )}
                 </button>
@@ -164,7 +221,9 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
 
         {node.type === "process" && (
           <div>
-            <h4 className="font-medium text-gray-900 mb-3">Processing Configuration</h4>
+            <h4 className="font-medium text-gray-900 mb-3">
+              Processing Configuration
+            </h4>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Processing Type
@@ -173,7 +232,7 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
                 value={processingType}
                 onChange={(e) => {
                   setProcessingType(e.target.value);
-                  handleConfigUpdate({ processingType: e.target.value });
+                  void handleConfigUpdate({ processingType: e.target.value });
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
@@ -189,7 +248,9 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
 
         {node.type === "output" && (
           <div>
-            <h4 className="font-medium text-gray-900 mb-3">Output Configuration</h4>
+            <h4 className="font-medium text-gray-900 mb-3">
+              Output Configuration
+            </h4>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Output Format
@@ -198,7 +259,7 @@ export function NodeToolbar({ nodeId, onClose }: NodeToolbarProps) {
                 value={outputFormat}
                 onChange={(e) => {
                   setOutputFormat(e.target.value);
-                  handleConfigUpdate({ outputFormat: e.target.value });
+                  void handleConfigUpdate({ outputFormat: e.target.value });
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >

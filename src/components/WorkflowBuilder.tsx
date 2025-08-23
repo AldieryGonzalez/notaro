@@ -15,62 +15,78 @@ export function WorkflowBuilder({ workflowId }: WorkflowBuilderProps) {
   const workflowData = useQuery(api.workflows.get, { workflowId });
   const addNode = useMutation(api.workflows.addNode);
   const addConnection = useMutation(api.workflows.addConnection);
-  
-  const [selectedNodeId, setSelectedNodeId] = useState<Id<"nodes"> | null>(null);
+
+  const [selectedNodeId, setSelectedNodeId] = useState<Id<"nodes"> | null>(
+    null
+  );
   const [isConnecting, setIsConnecting] = useState(false);
-  const [connectionStart, setConnectionStart] = useState<Id<"nodes"> | null>(null);
+  const [connectionStart, setConnectionStart] = useState<Id<"nodes"> | null>(
+    null
+  );
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  const handleAddNode = useCallback(async (type: "process" | "output", position: { x: number; y: number }) => {
-    const name = type === "process" ? "Process Node" : "Output Node";
-    await addNode({
-      workflowId,
-      type,
-      name,
-      position,
-    });
-  }, [addNode, workflowId]);
+  const handleAddNode = useCallback(
+    async (type: "process" | "output", position: { x: number; y: number }) => {
+      const name = type === "process" ? "Process Node" : "Output Node";
+      await addNode({
+        workflowId,
+        type,
+        name,
+        position,
+      });
+    },
+    [addNode, workflowId]
+  );
 
-  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === canvasRef.current) {
-      setSelectedNodeId(null);
-      if (isConnecting) {
+  const handleCanvasClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === canvasRef.current) {
+        setSelectedNodeId(null);
+        if (isConnecting) {
+          setIsConnecting(false);
+          setConnectionStart(null);
+        }
+      }
+    },
+    [isConnecting]
+  );
+
+  const handleNodeClick = useCallback(
+    (nodeId: Id<"nodes">) => {
+      if (isConnecting && connectionStart && connectionStart !== nodeId) {
+        // Complete connection
+        void addConnection({
+          workflowId,
+          sourceNodeId: connectionStart,
+          targetNodeId: nodeId,
+        });
         setIsConnecting(false);
         setConnectionStart(null);
+      } else {
+        setSelectedNodeId(nodeId);
       }
-    }
-  }, [isConnecting]);
-
-  const handleNodeClick = useCallback((nodeId: Id<"nodes">) => {
-    if (isConnecting && connectionStart && connectionStart !== nodeId) {
-      // Complete connection
-      addConnection({
-        workflowId,
-        sourceNodeId: connectionStart,
-        targetNodeId: nodeId,
-      });
-      setIsConnecting(false);
-      setConnectionStart(null);
-    } else {
-      setSelectedNodeId(nodeId);
-    }
-  }, [isConnecting, connectionStart, addConnection, workflowId]);
+    },
+    [isConnecting, connectionStart, addConnection, workflowId]
+  );
 
   const handleStartConnection = useCallback((nodeId: Id<"nodes">) => {
     setIsConnecting(true);
     setConnectionStart(nodeId);
   }, []);
 
-  const handleCanvasDoubleClick = useCallback((e: React.MouseEvent) => {
-    if (e.target === canvasRef.current) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      const position = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
-      handleAddNode("process", position);
-    }
-  }, [handleAddNode]);
+  const handleCanvasDoubleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const position = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        };
+        void handleAddNode("process", position);
+      }
+    },
+    [handleAddNode]
+  );
 
   if (!workflowData) {
     return (
@@ -94,13 +110,17 @@ export function WorkflowBuilder({ workflowId }: WorkflowBuilderProps) {
 
         <div className="absolute top-4 right-4 z-10 flex gap-2">
           <button
-            onClick={() => handleAddNode("process", { x: 300, y: 200 })}
+            onClick={() => {
+              void handleAddNode("process", { x: 300, y: 200 });
+            }}
             className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             + Process Node
           </button>
           <button
-            onClick={() => handleAddNode("output", { x: 500, y: 200 })}
+            onClick={() => {
+              void handleAddNode("output", { x: 500, y: 200 });
+            }}
             className="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
           >
             + Output Node
@@ -116,22 +136,35 @@ export function WorkflowBuilder({ workflowId }: WorkflowBuilderProps) {
             backgroundImage: `
               radial-gradient(circle, #e5e7eb 1px, transparent 1px)
             `,
-            backgroundSize: '20px 20px',
+            backgroundSize: "20px 20px",
           }}
         >
           {/* Render connections */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ zIndex: 1 }}
+          >
             {connections.map((connection) => {
-              const sourceNode = nodes.find(n => n._id === connection.sourceNodeId);
-              const targetNode = nodes.find(n => n._id === connection.targetNodeId);
-              
+              const sourceNode = nodes.find(
+                (n) => n._id === connection.sourceNodeId
+              );
+              const targetNode = nodes.find(
+                (n) => n._id === connection.targetNodeId
+              );
+
               if (!sourceNode || !targetNode) return null;
-              
+
               return (
                 <Connection
                   key={connection._id}
-                  sourcePosition={{ x: sourceNode.position.x + 150, y: sourceNode.position.y + 40 }}
-                  targetPosition={{ x: targetNode.position.x, y: targetNode.position.y + 40 }}
+                  sourcePosition={{
+                    x: sourceNode.position.x + 150,
+                    y: sourceNode.position.y + 40,
+                  }}
+                  targetPosition={{
+                    x: targetNode.position.x,
+                    y: targetNode.position.y + 40,
+                  }}
                 />
               );
             })}
@@ -151,7 +184,10 @@ export function WorkflowBuilder({ workflowId }: WorkflowBuilderProps) {
 
           {/* Connection preview */}
           {isConnecting && connectionStart && (
-            <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ zIndex: 2 }}
+            >
               <div className="text-center text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-1 absolute top-4 left-1/2 transform -translate-x-1/2">
                 Click on another node to connect
               </div>

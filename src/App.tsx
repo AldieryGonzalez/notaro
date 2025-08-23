@@ -1,21 +1,23 @@
 import { Authenticated, Unauthenticated, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
-import { SignInForm } from "./SignInForm";
-import { SignOutButton } from "./SignOutButton";
 import { Toaster } from "sonner";
 import { WorkflowBuilder } from "./components/WorkflowBuilder";
 import { WorkflowList } from "./components/WorkflowList";
 import { useState } from "react";
 import { Id } from "../convex/_generated/dataModel";
+import { SignInButton, SignOutButton } from "@clerk/clerk-react";
 
 export default function App() {
-  const [selectedWorkflowId, setSelectedWorkflowId] = useState<Id<"workflows"> | null>(null);
+  const [selectedWorkflowId, setSelectedWorkflowId] =
+    useState<Id<"workflows"> | null>(null);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm h-16 flex justify-between items-center border-b shadow-sm px-4">
         <div className="flex items-center gap-4">
-          <h2 className="text-xl font-semibold text-primary">Workflow Builder</h2>
+          <h2 className="text-xl font-semibold text-primary">
+            Workflow Builder
+          </h2>
           {selectedWorkflowId && (
             <button
               onClick={() => setSelectedWorkflowId(null)}
@@ -28,7 +30,7 @@ export default function App() {
         <SignOutButton />
       </header>
       <main className="flex-1">
-        <Content 
+        <Content
           selectedWorkflowId={selectedWorkflowId}
           onSelectWorkflow={setSelectedWorkflowId}
         />
@@ -38,28 +40,18 @@ export default function App() {
   );
 }
 
-function Content({ 
-  selectedWorkflowId, 
-  onSelectWorkflow 
-}: { 
+function Content({
+  selectedWorkflowId,
+  onSelectWorkflow,
+}: {
   selectedWorkflowId: Id<"workflows"> | null;
   onSelectWorkflow: (id: Id<"workflows"> | null) => void;
 }) {
-  const loggedInUser = useQuery(api.auth.loggedInUser);
-
-  if (loggedInUser === undefined) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-full">
       <Authenticated>
         {selectedWorkflowId ? (
-          <WorkflowBuilder 
+          <WorkflowBuilder
             workflowId={selectedWorkflowId}
             onBack={() => onSelectWorkflow(null)}
           />
@@ -71,10 +63,14 @@ function Content({
         <div className="flex items-center justify-center h-full">
           <div className="w-full max-w-md mx-auto p-8">
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-primary mb-4">Workflow Builder</h1>
-              <p className="text-xl text-secondary">Create and manage your workflows</p>
+              <h1 className="text-4xl font-bold text-primary mb-4">
+                Workflow Builder
+              </h1>
+              <p className="text-xl text-secondary">
+                Create and manage your workflows
+              </p>
             </div>
-            <SignInForm />
+            <SignInButton />
           </div>
         </div>
       </Unauthenticated>

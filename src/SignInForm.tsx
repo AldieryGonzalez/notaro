@@ -72,6 +72,9 @@ export function SignInForm() {
       <button className="auth-button" onClick={() => void signIn("anonymous")}>
         Sign in anonymously
       </button>
+      <button className="auth-button" onClick={() => void signIn("linear")}>
+        Sign in with Linear
+      </button>
     </div>
   );
 }
