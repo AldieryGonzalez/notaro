@@ -1,10 +1,16 @@
 import { openai } from "@ai-sdk/openai";
-import { generateText, streamText } from "ai";
+import {
+  convertToModelMessages,
+  generateText,
+  streamText,
+  UIMessage,
+} from "ai";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { file, fileName, fileType, message } = await req.json();
+    const { messages }: { messages: UIMessage[] } = await req.json();
+    const modelMessages = convertToModelMessages(messages);
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
@@ -16,37 +22,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let prompt = message || `Analyze this file: ${fileName}`;
-    const messages: any[] = [
-      {
-        role: "user",
-        content: [{ type: "text", text: prompt }],
-      },
-    ];
-
-    // Handle different file types
-    if (fileType.startsWith("image/")) {
-      // For images, add the image to the message
-      messages[0].content.push({
-        type: "image",
-        image: file, // base64 data URL
-      });
-    } else if (
-      fileType.startsWith("text/") ||
-      fileType === "application/json"
-    ) {
-      // For text files, decode and add as text (file is expected as a data URL)
-      const base64Data = (file as string).split(",")[1];
-      const textContent = Buffer.from(base64Data, "base64").toString("utf-8");
-      messages[0].content[0].text += `\n\nFile content:\n${textContent}`;
-    } else {
-      // For other file types, provide basic info
-      messages[0].content[0].text += `\n\nFile type: ${fileType}\nFile name: ${fileName}\nNote: This file type may require special handling for full analysis.`;
-    }
-
     const result = await streamText({
       model: openai("gpt-4o"),
-      messages,
+      messages: modelMessages,
       maxOutputTokens: 1000,
     });
 
