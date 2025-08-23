@@ -7,19 +7,11 @@ import Webcam from "react-webcam";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Upload,
-  FileText,
-  ImageIcon,
-  File,
-  Camera,
-  X,
-} from "lucide-react";
+import { Upload, FileText, ImageIcon, File, Camera, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { Loader } from "@/components/ai-elements/loader";
-
 
 async function convertFilesToDataURLs(
   files: FileList
@@ -101,7 +93,6 @@ export default function FileChatApp() {
     }
   };
 
-
   const capturePhoto = async () => {
     if (!webcamRef.current) {
       console.error("Webcam ref is not available");
@@ -128,7 +119,7 @@ export default function FileChatApp() {
       }) as File;
 
       setShowCamera(false);
-      
+
       // Create a FileList-like object
       const fileList = {
         0: file,
@@ -138,7 +129,7 @@ export default function FileChatApp() {
           yield file;
         },
       } as FileList;
-      
+
       setFiles(fileList);
       await processFile(fileList);
     } catch (error) {
@@ -169,7 +160,6 @@ export default function FileChatApp() {
           </p>
         </div>
       </header>
-      <Linear/>
 
       {/* Chat Area */}
       <div className="flex-1 container mx-auto px-4 py-6 max-w-4xl overflow-hidden">
