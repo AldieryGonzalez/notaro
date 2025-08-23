@@ -87,7 +87,10 @@ export default function FileChatApp() {
       // Send to AI API
       sendMessage({
         role: "user",
-        parts: fileParts,
+        parts: [
+          { type: "text", text: "Please analyze this file." },
+          ...fileParts,
+        ],
       });
     } catch (error) {
       console.error("Error processing file:", error);
