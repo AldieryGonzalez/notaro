@@ -169,6 +169,7 @@ export default function FileChatApp() {
           </p>
         </div>
       </header>
+      <Linear/>
 
       {/* Chat Area */}
       <div className="flex-1 container mx-auto px-4 py-6 max-w-4xl overflow-hidden">

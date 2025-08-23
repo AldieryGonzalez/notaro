@@ -10,6 +10,7 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@linear/sdk": "^57.0.0",
     "@ai-sdk/openai": "^2.0.19",
     "@ai-sdk/react": "^2.0.22",
     "@radix-ui/react-avatar": "^1.1.10",
