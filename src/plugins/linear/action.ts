@@ -23,7 +23,7 @@ export async function createIssue(title: string, description?: string) {
   const todoState = states.nodes.find((state) => state.name === "Todo");
   const todoStateId = todoState?.id;
   try {
-     await linearClient.createIssue({
+    await linearClient.createIssue({
       teamId: process.env.LINEAR_TEAM_ID ?? teamId,
       title: title,
       description: description,
